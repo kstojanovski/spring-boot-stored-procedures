@@ -1,0 +1,10 @@
+services:
+  sqlserver:
+    image: 'mcr.microsoft.com/mssql/server:2022-CU18-ubuntu-22.04'
+    environment:
+      - 'ACCEPT_EULA=Y'
+      - 'MSSQL_PID=express'
+      - 'MSSQL_SA_PASSWORD=verYs3cret$'
+    ports:
+      - '1433:1433'
+    platform: linux/amd64

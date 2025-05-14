@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet id="create-user-schema" author="liquibase" runAlways="false">
+        <comment>Create Oracle user/schema for mydatabase</comment>
+
+        <!-- Create the user with password -->
+        <sql dbms="oracle">
+            CREATE USER mydatabase IDENTIFIED BY mysecret
+            DEFAULT TABLESPACE USERS
+            TEMPORARY TABLESPACE TEMP
+            QUOTA UNLIMITED ON USERS;
+        </sql>
+
+        <!-- Grant necessary privileges to the user -->
+        <sql dbms="oracle">
+            GRANT CONNECT, RESOURCE TO mydatabase;
+            GRANT CREATE SESSION TO mydatabase;
+            GRANT CREATE TABLE TO mydatabase;
+            GRANT CREATE VIEW TO mydatabase;
+            GRANT CREATE PROCEDURE TO mydatabase;
+            GRANT CREATE SEQUENCE TO mydatabase;
+            GRANT CREATE TRIGGER TO mydatabase;
+        </sql>
+
+        <rollback>
+            <sql dbms="oracle">
+                DROP USER mydatabase CASCADE;
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="1746028593794-1" author="kst">
+        <createTable tableName="car" schemaName="mydatabase">
+            <column autoIncrement="true" name="id" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_car"/>
+            </column>
+            <column name="model" type="VARCHAR2(255 CHAR)"/>
+            <column name="year" type="NUMBER(10,0)"/>
+            <column name="brand" type="VARCHAR(255 CHAR)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="create-find-cars-after-year-proc" author="kst">
+        <createProcedure schemaName="mydatabase">
+            <![CDATA[
+            CREATE OR REPLACE PROCEDURE FIND_CARS_AFTER_YEAR (
+                year_in IN NUMBER,
+                result_cursor OUT SYS_REFCURSOR
+            ) IS
+            BEGIN
+                OPEN result_cursor FOR
+                    SELECT * FROM car WHERE year >= year_in ORDER BY year;
+            END FIND_CARS_AFTER_YEAR;
+            ]]>
+        </createProcedure>
+        <rollback>
+            DROP PROCEDURE FIND_CARS_AFTER_YEAR;
+        </rollback>
+    </changeSet>
+    <changeSet id="create-get-total-cars-by-model-proc" author="kst">
+        <createProcedure schemaName="mydatabase">
+            <![CDATA[
+            CREATE OR REPLACE PROCEDURE GET_TOTAL_CARS_BY_MODEL(
+                model_in IN VARCHAR2,
+                count_out OUT NUMBER
+            ) AS
+            BEGIN
+            SELECT COUNT(*) INTO count_out FROM car WHERE model = model_in;
+            END;
+            ]]>
+        </createProcedure>
+        <rollback>
+            DROP PROCEDURE GET_TOTAL_CARS_BY_MODEL;
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

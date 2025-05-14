@@ -1,0 +1,31 @@
+-- Connect as a privileged user (like SYSTEM or SYS)
+CONNECT sys/test@freebdb1 AS SYSDBA;
+
+-- Create the user
+CREATE USER test IDENTIFIED BY test;
+
+-- Grant basic privileges
+GRANT CREATE SESSION TO test;
+GRANT CREATE TABLE TO test;
+GRANT CREATE VIEW TO test;
+GRANT CREATE SEQUENCE TO test;
+GRANT CREATE PROCEDURE TO test;
+
+-- Optionally grant space quota on tablespace
+ALTER USER test QUOTA UNLIMITED ON USERS;
+
+-- For additional privileges (if needed)
+GRANT CREATE ANY DIRECTORY TO test;
+GRANT CREATE JOB TO test;
+
+-- ALTER USER SYSTEM GRANT CONNECT TO SYSTEM;
+-- ALTER USER SYSTEM GRANT RESOURCE TO SYSTEM;
+-- ALTER USER SYSTEM GRANT CONNECT TO SYSTEM;
+-- GRANT CONNECT, RESOURCE, DBA TO system;
+
+
+-- CREATE USER test IDENTIFIED BY test;
+-- GRANT CONNECT, RESOURCE, DBA TO test;
+
+-- CREATE USER test IDENTIFIED BY test;
+-- GRANT CONNECT, RESOURCE, DBA TO test;

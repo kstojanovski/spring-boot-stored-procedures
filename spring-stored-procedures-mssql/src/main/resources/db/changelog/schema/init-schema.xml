@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="create-mydatabase" author="kst" dbms="mssql">
+        <comment>Create the mydatabase database</comment>
+        <sql>
+            IF NOT EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE name = 'mydatabase')
+            CREATE DATABASE mydatabase
+        </sql>
+        <rollback>
+            <sql>
+                IF EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE name = 'mydatabase')
+                BEGIN
+                ALTER DATABASE mydatabase SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+                DROP DATABASE mydatabase;
+                END
+            </sql>
+        </rollback>
+    </changeSet>
+    <changeSet id="1746028593794-1" author="kst">
+        <createTable tableName="car">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_car"/>
+            </column>
+            <column name="model" type="VARCHAR(255)"/>
+            <column name="year" type="INT"/>
+            <column name="brand" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="create-find-cars-after-year-proc" author="liquibase">
+        <createProcedure>
+            CREATE PROCEDURE FIND_CARS_AFTER_YEAR
+                @year_in INT
+            AS
+            BEGIN
+            SELECT * FROM car WHERE year >= @year_in ORDER BY year;
+            END;
+        </createProcedure>
+        <rollback>
+            DROP PROCEDURE FIND_CARS_AFTER_YEAR;
+        </rollback>
+    </changeSet>
+    <changeSet id="create-get-total-cars-by-model-proc" author="kst">
+        <createProcedure>
+            CREATE PROCEDURE GET_TOTAL_CARS_BY_MODEL
+                @model_in VARCHAR(50),
+                @count_out INT OUTPUT
+            AS
+            BEGIN
+            SELECT COUNT(*) FROM car WHERE model = @model_in;
+            END;
+        </createProcedure>
+        <rollback>
+            DROP PROCEDURE GET_TOTAL_CARS_BY_MODEL;
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

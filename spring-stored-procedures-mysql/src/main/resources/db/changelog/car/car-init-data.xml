@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd
+  http://www.liquibase.org/xml/ns/pro
+  http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
+
+    <changeSet id="insert-sample-car-data" author="kst">
+        <comment>Insert 5 sample car records</comment>
+
+        <insert tableName="car">
+            <column name="model" value="Model 3"/>
+            <column name="year" valueNumeric="2022"/>
+            <column name="brand" value="Tesla"/>
+        </insert>
+
+        <insert tableName="car">
+            <column name="model" value="Civic"/>
+            <column name="year" valueNumeric="2023"/>
+            <column name="brand" value="Honda"/>
+        </insert>
+
+        <insert tableName="car">
+            <column name="model" value="F-150"/>
+            <column name="year" valueNumeric="2021"/>
+            <column name="brand" value="Ford"/>
+        </insert>
+
+        <insert tableName="car">
+            <column name="model" value="Corolla"/>
+            <column name="year" valueNumeric="2022"/>
+            <column name="brand" value="Toyota"/>
+        </insert>
+
+        <rollback>
+            <delete tableName="car">
+                <where>model='Model 3' AND brand='Tesla'</where>
+            </delete>
+            <delete tableName="car">
+                <where>model='Civic' AND brand='Honda'</where>
+            </delete>
+            <delete tableName="car">
+                <where>model='F-150' AND brand='Ford'</where>
+            </delete>
+            <delete tableName="car">
+                <where>model='Corolla' AND brand='Toyota'</where>
+            </delete>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

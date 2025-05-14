@@ -1,0 +1,8 @@
+services:
+  oracle:
+    container_name: 'of'
+    image: 'gvenzl/oracle-free:latest'
+    environment:
+      - 'ORACLE_PASSWORD=secret'
+    ports:
+      - '1521:1521'
